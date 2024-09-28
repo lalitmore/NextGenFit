@@ -1,33 +1,18 @@
 import os
 import requests
 
-# Set up the Gemini API key
-API_KEY = os.getenv('GEMINI_API_KEY')  # Replace with your actual Gemini API key
-API_URL = 'https://gemini.googleapis.com/v1/chat'
+import google.generativeai as genai
+import os
 
-# Function to interact with the Gemini API and generate workouts
+
 def get_workout_recommendation(prompt):
-    headers = {
-        'Authorization': f'Bearer {API_KEY}',
-        'Content-Type': 'application/json'
-    }
+    
+    genai.configure(api_key=os.environ["API_KEY"])
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(prompt)
+    #print(response.text)
 
-    # Request payload
-    data = {
-        "prompt": prompt,  # User's query for personalized workout
-        "model": "gemini-v1",  # Replace with the correct Gemini model version
-        "max_tokens": 200  # Adjust the response length as needed
-    }
-
-    # Send the request to the Gemini API
-    response = requests.post(API_URL, json=data, headers=headers)
-
-    if response.status_code == 200:
-        result = response.json()
-        # Extract the generated workout plan from the response
-        return result['choices'][0]['text']
-    else:
-        return f"Error: {response.status_code}, {response.text}"
+    return response.text
 
 # Get user inputs
 def get_user_inputs():
